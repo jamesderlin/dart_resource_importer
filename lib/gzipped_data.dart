@@ -4,7 +4,7 @@ import 'dart:typed_data';
 /// A class that wraps gzip-compressed binary data.
 class GzippedData {
   /// The compressed bytes.
-  final Uint8List compressedBytes;
+  final List<int> compressedBytes;
 
   /// Constructor.
   const GzippedData(this.compressedBytes);

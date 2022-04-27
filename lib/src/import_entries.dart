@@ -38,7 +38,7 @@ abstract class ImportEntry {
     String? type,
     FileSystem fs = const LocalFileSystem(),
   }) {
-    var file = fs.file(path);
+    var file = fs.file(fs.path.normalize(path));
     // if (!file.existsSync()) {
     //   throw ArgumentError('File "$path" not found.');
     // }
@@ -216,7 +216,7 @@ class StringListImportEntry extends ImportEntry {
     }
 
     var data = _file.readAsStringSync();
-    var lines = const LineSplitter().convert(data);
+    var lines = LineSplitter.split(data);
 
     var stringBuffer = StringBuffer()..write('var $name = [');
     for (var line in lines) {
