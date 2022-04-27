@@ -1,0 +1,17 @@
+name: resource_importer
+description: Imports resource files as code literals.
+version: 0.1.0
+repository: https://github.com/jamesderlin/dart_resource_importer
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+  charcode: ^1.3.1
+  dart_style: ^2.2.3
+  file: ^6.1.2
+  path: ^1.8.1
+  yaml: ^3.1.0
+
+dev_dependencies:
+  test: ^1.16.0
