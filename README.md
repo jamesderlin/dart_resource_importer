@@ -60,21 +60,24 @@ standalone executables, tests for Dart for the Web).
 
 ```yaml
 resource_importer:
+  destination: 'lib/foo.resources.dart'
   # Optional.  The path to the generated `.dart` file.  If not specified,
   # `lib/resources.resource_importer.dart` will be used by default.
-  destination: 'lib/foo.resources.dart'
 
-  # Required.  The list of resources to import.
   resources:
+  # Required.  The list of resources to import.
+
+    resourceName:
     # Required.  The name of the resource.  This will be directly used as the
     # name of the generated Dart variable, so it must be a valid Dart
     # identifier.
-    resourceName:
+
+      path: 'path/to/file'
       # Required.  The path to the file to import.  Relative paths are treated
       # as relative to the package's root directory (i.e., the directory
       # containing the `pubspec.yaml` file).
-      path: 'path/to/file'
 
+      type: Uint8List
       # Optional.  The type of the resource.  Corresponds to the type of the
       # generated variable.  Allowed types are:
       #
@@ -95,10 +98,9 @@ resource_importer:
       #
       # * `GzippedData`
       #     Like `Uint8List` but compressed with gzip.
-      type: String
 
-    # A shorthand syntax is also provided for `Uint8List` types.
     binaryResourceName: 'path/to/file'
+    # A shorthand syntax is also provided for `Uint8List` types.
 ```
 
 ### Usage
