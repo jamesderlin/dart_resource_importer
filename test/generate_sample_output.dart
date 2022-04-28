@@ -20,7 +20,12 @@ import 'package:resource_importer/src/resource_importer.dart';
 import 'test_common.dart';
 
 void main() async {
-  var fs = setUpMemoryFileSystem('/', FileSystemStyle.posix);
+  var fs = setUpMemoryFileSystem(
+    yaml: allYaml,
+    packageRootPath: '/',
+    style: FileSystemStyle.posix,
+  );
+
   await processYamlConfiguration(fs: fs);
 
   var generatedFile = fs.file(destinationPathPosix);

@@ -25,7 +25,10 @@ resource_importer:
       path: '$binaryFilePathPosix'
       type: Uint8List
 
-    shorthandBinaryResource: '$binaryFilePathPosix'
+    shorterBinaryResource:
+      path: '$binaryFilePathPosix'
+
+    shortestBinaryResource: '$binaryFilePathPosix'
 
     base64Resource:
       path: '$binaryFilePathPosix'
@@ -36,7 +39,8 @@ resource_importer:
       type: GzippedData
 ''';
 
-const multilineString = 'The quick brown fox jumps over the lazy dog.\n'
+const multilineString = //
+    'The quick brown fox jumps over the lazy dog.\n'
     'Pack my box with five dozen liquor jugs.\n'
     'Jackdaws love my big sphinx of quartz.\n'
     'The five boxing wizards jump quickly.\n';
@@ -45,10 +49,11 @@ final binaryData = Uint8List.fromList([
 ]);
 
 /// Creates and return a [MemoryFileSystem] with predetermined contents.
-MemoryFileSystem setUpMemoryFileSystem(
-  String packageRootPath,
-  FileSystemStyle style,
-) {
+MemoryFileSystem setUpMemoryFileSystem({
+  required String yaml,
+  required String packageRootPath,
+  required FileSystemStyle style,
+}) {
   var fs = MemoryFileSystem(style: style);
 
   var binaryFilePath = binaryFilePathPosix;
@@ -63,7 +68,7 @@ MemoryFileSystem setUpMemoryFileSystem(
       .createSync(recursive: true);
   fs
       .file(fs.path.join(packageRootPath, 'pubspec.yaml'))
-      .writeAsStringSync(allYaml);
+      .writeAsStringSync(yaml);
   fs
       .file(fs.path.join(packageRootPath, binaryFilePath))
       .writeAsBytesSync(binaryData);

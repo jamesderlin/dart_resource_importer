@@ -12,18 +12,21 @@ import 'test_common.dart';
 void main() {
   const packageRootPath = r'D:\src\package';
 
-  var fs = setUpMemoryFileSystem(packageRootPath, FileSystemStyle.windows);
-
-  setUp(() {
-    fs.currentDirectory = packageRootPath;
-  });
-
   test('Generated output matches expected output', () async {
-    await processYamlConfiguration(fs: fs);
+    var fs = setUpMemoryFileSystem(
+      yaml: allYaml,
+      packageRootPath: packageRootPath,
+      style: FileSystemStyle.windows,
+    );
 
     var destinationPath = destinationPathPosix.toWindows();
-
     var generatedFile = fs.file(destinationPath);
+
+    expect(generatedFile.existsSync(), false);
+    expect(generatedFile.parent.existsSync(), false);
+
+    await processYamlConfiguration(fs: fs);
+
     expect(generatedFile.existsSync(), true);
 
     // Output should be already formatted.
@@ -43,7 +46,8 @@ void main() {
     expect(resources.stringResource, multilineString);
     expect(resources.stringListResource, LineSplitter.split(multilineString));
     expect(resources.binaryResource, binaryData);
-    expect(resources.shorthandBinaryResource, binaryData);
+    expect(resources.shorterBinaryResource, binaryData);
+    expect(resources.shortestBinaryResource, binaryData);
     expect(resources.base64Resource.data(), binaryData);
     expect(resources.gzippedResource.data(), binaryData);
   });
