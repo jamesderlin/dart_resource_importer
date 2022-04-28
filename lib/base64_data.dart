@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-/// A class that wraps base64-encoded binary data.
+/// A class that wraps [base64]-encoded binary data.
 class Base64Data {
   /// The base64-encoded string.
   final String encodedString;

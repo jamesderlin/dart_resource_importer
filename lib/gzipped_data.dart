@@ -1,7 +1,7 @@
-import 'dart:io' as io;
+import 'dart:io' show gzip;
 import 'dart:typed_data';
 
-/// A class that wraps gzip-compressed binary data.
+/// A class that wraps [gzip]-compressed binary data.
 class GzippedData {
   /// The compressed bytes.
   final List<int> compressedBytes;
@@ -11,7 +11,7 @@ class GzippedData {
 
   /// Returns the decompressed bytes.
   Uint8List data() {
-    var originalBytes = io.gzip.decode(compressedBytes);
+    var originalBytes = gzip.decode(compressedBytes);
     return originalBytes is Uint8List
         ? originalBytes
         : Uint8List.fromList(originalBytes);

@@ -115,7 +115,7 @@ resource_importer:
    code generation.  Currently this is expected to be done manually and will
    not be performed automatically.
 
-The `Base64Data` and `GzippedData` types are custom classes provided by
+The [`Base64Data`] and [`GzippedData`] types are custom classes provided by
 `resource_importer`.  If you use them, you must use a regular dependency:
 
   ```yaml
@@ -123,6 +123,11 @@ The `Base64Data` and `GzippedData` types are custom classes provided by
     resource_importer: ^0.1.0
   ```
 
-The `Base64Data` and `GzippedData` types have a `data()` member that can be
-used to access their decoded bytes as a `Uint8List`. `GzippedData` depends on
+And then use [`Base64Data.data()`] or [`GzippedData.data()`] respectively to
+access their decoded bytes as `Uint8List`s. Note that `GzippedData` depends on
 `dart:io` and therefore cannot be used for Dart for the Web.
+
+[`Base64Data`]: https://pub.dev/packages/resource_importer/latest/base64_data/Base64Data-class.html
+[`GzippedData`]: https://pub.dev/packages/resource_importer/latest/gzipped_data/GzippedData-class.html
+[`Base64Data.data()`]: https://pub.dev/packages/resource_importer/latest/base64_data/Base64Data/data.html
+[`GzippedData.data()`]: https://pub.dev/packages/resource_importer/latest/gzipped_data/GzippedData/data.html
