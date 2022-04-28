@@ -127,67 +127,120 @@ ResourceImporterConfiguration? loadResourceImporterConfiguration(
     return null;
   }
 
-  var resourceImporterRoot = documentRoot[packageName];
+  var resourceImporterRoot = documentRoot.nodes[packageName];
   if (resourceImporterRoot == null) {
     return null;
   }
 
+  if (resourceImporterRoot.value == null) {
+    throw YamlException(
+      '"$packageName" block must not be empty.',
+      resourceImporterRoot.span,
+    );
+  }
+
   if (resourceImporterRoot is! YamlMap) {
-    throw FormatException(
-      'Invalid value for "$packageName": $resourceImporterRoot',
+    throw YamlException(
+      'Invalid value for "$packageName": ${resourceImporterRoot.value}',
+      resourceImporterRoot.span,
     );
   }
 
   const destinationKey = 'destination';
-  var destinationPath =
-      resourceImporterRoot[destinationKey] ?? 'lib/resources.$packageName.dart';
-  if (destinationPath is! String) {
-    throw FormatException(
-      'Invalid value for "$destinationKey": $destinationPath}',
-    );
+  var destinationNode = resourceImporterRoot.nodes[destinationKey];
+  String destinationPath;
+  if (destinationNode == null) {
+    destinationPath = 'lib/resources.$packageName.dart';
+  } else {
+    var value = destinationNode.value;
+    if (value is String) {
+      destinationPath = value;
+    } else {
+      throw YamlException(
+        'Invalid value for "$destinationKey": $value',
+        destinationNode.span,
+      );
+    }
   }
 
   destinationPath = fs.path.normalize(destinationPath);
 
   const resourcesKey = 'resources';
-  var resourcesRoot = resourceImporterRoot[resourcesKey];
+  var resourcesRoot = resourceImporterRoot.nodes[resourcesKey];
   if (resourcesRoot == null) {
-    throw const FormatException('No "$resourcesKey" entry found.');
+    throw YamlException(
+      '"$resourcesKey" entry is required.',
+      resourceImporterRoot.span,
+    );
   }
+
+  if (resourcesRoot.value == null) {
+    throw YamlException(
+      '"$resourcesKey" block must not be empty.',
+      resourcesRoot.span,
+    );
+  }
+
   if (resourcesRoot is! YamlMap) {
-    throw FormatException(
-      'Invalid value for "$resourcesKey": $resourcesRoot',
+    throw YamlException(
+      'Invalid value for "$resourcesKey": ${resourcesRoot.value}',
+      resourcesRoot.span,
     );
   }
 
   var importEntries = <ImportEntry>[];
-  for (var entry in resourcesRoot.entries) {
-    var key = entry.key;
+  for (var entry in resourcesRoot.nodes.entries) {
+    var keyNode = entry.key as YamlNode;
+    var key = keyNode.value;
     if (key is! String) {
-      throw FormatException('Invalid resource key: $key');
+      throw YamlException('Invalid resource key: $key', keyNode.span);
     }
 
-    var value = entry.value;
-    if (value is String) {
+    var valueNode = entry.value;
+    var value = valueNode.value;
+    if (value == null) {
+      throw YamlException('No value for "$key" entry.', valueNode.span);
+    } else if (value is String) {
       importEntries.add(ImportEntry(name: key, fs: fs, path: value));
-    } else if (value is YamlMap) {
+    } else if (value is! YamlMap) {
+      throw YamlException('Invalid value for "$key": $value', valueNode.span);
+    } else {
       const pathKey = 'path';
-      var path = value[pathKey];
-      if (path == null) {
-        throw FormatException('No path specified for "$key".');
-      } else if (path is! String) {
-        throw FormatException('Invalid value for "$pathKey": $path');
+      var pathNode = value.nodes[pathKey];
+      if (pathNode == null) {
+        throw YamlException('No path specified for "$key".', valueNode.span);
+      }
+
+      var path = pathNode.value;
+      if (path is! String) {
+        throw YamlException(
+          'Invalid value for "$pathKey": $path.',
+          pathNode.span,
+        );
       }
 
       const typeKey = 'type';
-      var type = value[typeKey];
-      if (type is! String?) {
-        throw FormatException('Invalid value for "$typeKey": $type');
+      var typeNode = value.nodes[typeKey];
+      String? type;
+      if (typeNode != null) {
+        var value = typeNode.value;
+        if (value is! String) {
+          throw YamlException(
+            'Invalid value for "$typeKey": $value',
+            typeNode.span,
+          );
+        }
+        type = value;
       }
 
-      importEntries.add(ImportEntry(name: key, fs: fs, path: path, type: type));
-    } else {
-      throw FormatException('Invalid value for "$key": $value');
+      ImportEntry importEntry;
+      try {
+        importEntry = ImportEntry(name: key, fs: fs, path: path, type: type);
+      } on Exception catch (e) {
+        throw YamlException(e.toString(), valueNode.span);
+      }
+
+      importEntries.add(importEntry);
     }
   }
 
