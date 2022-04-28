@@ -112,10 +112,12 @@ resource_importer:
       resource_importer: ^0.1.0
     ```
 
-2. Run `dart run resource_importer` from within your package to process the
-   `resource_importer` configuration in your `pubspec.yaml` and to perform
-   code generation.  Currently this is expected to be done manually and will
-   not be performed automatically.
+2. Add a `resource_importer` block to your `pubspec.yaml` file as described
+   above.
+
+3. Run `dart run resource_importer` from the directory that contains your
+   `pubspec.yaml` file to generate code.  Currently this is not automatic and
+   instead is expected to be run manually as needed.
 
 The [`Base64Data`] and [`GzippedData`] types are custom classes provided by
 `resource_importer`.  If you use them, you must use a regular dependency:
