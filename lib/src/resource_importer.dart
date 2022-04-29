@@ -102,16 +102,16 @@ Future<void> processYamlDocument(
   if (!destinationFile.existsSync()) {
     destinationFile.parent.createSync(recursive: true);
   } else {
-    var firstLine = await destinationFile
-        .openRead()
-        .transform(utf8.decoder)
+    // See <https://github.com/google/file.dart/issues/193>.
+    var firstLine = await utf8.decoder
+        .bind(destinationFile.openRead())
         .transform(const LineSplitter())
         .first;
     firstLine = firstLine.toLowerCase();
     if (firstLine.contains('generated') && firstLine.contains(packageName)) {
       // Safe to overwrite.
     } else {
-      throw ArgumentError(
+      throw io.FileSystemException(
         'File "${config.destinationPath}" already exists.  Cowardly refusing '
         'to overwrite it.',
       );

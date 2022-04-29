@@ -48,7 +48,7 @@ final binaryData = Uint8List.fromList([
   for (var i = 0; i < 512; i += 1) i,
 ]);
 
-/// Creates and return a [MemoryFileSystem] with predetermined contents.
+/// Creates and return a [MemoryFileSystem] with default contents.
 MemoryFileSystem setUpMemoryFileSystem({
   required String yaml,
   required String packageRootPath,
@@ -64,21 +64,40 @@ MemoryFileSystem setUpMemoryFileSystem({
   }
 
   fs
-      .directory(fs.path.join(packageRootPath, 'assets'))
-      .createSync(recursive: true);
-  fs
-      .file(fs.path.join(packageRootPath, 'pubspec.yaml'))
-      .writeAsStringSync(yaml);
-  fs
-      .file(fs.path.join(packageRootPath, binaryFilePath))
-      .writeAsBytesSync(binaryData);
-
-  fs
-      .file(fs.path.join(packageRootPath, multilineTextFilePath))
-      .writeAsStringSync(multilineString);
-
-  fs.currentDirectory = packageRootPath;
+    ..addFile('$packageRootPath/pubspec.yaml', content: yaml)
+    ..addFile('$packageRootPath/$binaryFilePath', content: binaryData)
+    ..addFile(
+      '$packageRootPath/$multilineTextFilePath',
+      content: multilineString,
+    )
+    ..currentDirectory = packageRootPath;
   return fs;
+}
+
+extension AddMemoryFile on MemoryFileSystem {
+  /// Adds a [File] with the specified path and contents.
+  ///
+  /// Automatically creates all ancesetor directories if necessary.
+  ///
+  /// [content] must be either a [Uint8List] or a [String].
+  void addFile(
+    String pathPosix, {
+    required Object content,
+  }) {
+    var path =
+        (style == FileSystemStyle.windows) ? pathPosix.toWindows() : pathPosix;
+
+    var file = this.file(path)..parent.createSync(recursive: true);
+    if (content is String) {
+      file.writeAsStringSync(content);
+    } else if (content is Uint8List) {
+      file.writeAsBytes(content);
+    } else {
+      throw ArgumentError(
+        'addMemoryFile: Unsupported content type: ${content.runtimeType}',
+      );
+    }
+  }
 }
 
 /// Returns the absolute path to the `test` directory.
