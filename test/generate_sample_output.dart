@@ -15,11 +15,16 @@
 
 import 'package:file/local.dart';
 import 'package:file/memory.dart';
+import 'package:logging/logging.dart' as log;
 import 'package:resource_importer/src/resource_importer.dart';
 
 import 'test_common.dart';
 
 void main() async {
+  final logger = log.Logger.root
+    ..level = log.Level.WARNING
+    ..onRecord.listen(print);
+
   var fs = setUpMemoryFileSystem(
     yaml: allYaml,
     packageRootPath: '/',
@@ -28,14 +33,18 @@ void main() async {
 
   await processYamlConfiguration(fs: fs);
 
+  logger.level = log.Level.INFO;
+
   var generatedFile = fs.file(destinationPathPosix);
   var contents = generatedFile.readAsStringSync();
 
   var testPath = getTestPath();
 
   const localFs = LocalFileSystem();
-  localFs.currentDirectory =
-      localFs.directory(localFs.path.join(testPath, 'expected'))..createSync();
-
-  localFs.file('test.resources.dart').writeAsStringSync(contents);
+  var destinationFile = localFs.file(
+    localFs.path.join(testPath, 'expected', 'test.resources.dart'),
+  )
+    ..parent.createSync()
+    ..writeAsStringSync(contents);
+  logger.info('Wrote ${localFs.path.relative(destinationFile.path)}');
 }

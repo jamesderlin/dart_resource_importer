@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:basics/date_time_basics.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:file/file.dart';
@@ -91,6 +92,57 @@ Future<void> processYamlDocument(
     return;
   }
 
+  var destinationFile = fs.file(config.destinationPath);
+  if (!destinationFile.existsSync()) {
+    destinationFile.parent.createSync(recursive: true);
+  } else {
+    // See <https://github.com/google/file.dart/issues/193>.
+    var heading = await utf8.decoder
+        .bind(destinationFile.openRead())
+        .transform(const LineSplitter())
+        .take(2)
+        .toList();
+
+    var allowOverwrite = false;
+    if (heading.length >= 2) {
+      heading[0] = heading[0].toLowerCase();
+      allowOverwrite =
+          heading[0].contains('generated') && heading[0].contains(packageName);
+    }
+
+    if (!allowOverwrite) {
+      throw io.FileSystemException(
+        'File "${config.destinationPath}" already exists.  Cowardly refusing '
+        'to overwrite it.',
+      );
+    }
+
+    var needsUpdate = false;
+    var existingChecksum =
+        RegExp(r'Checksum: (.+)$').firstMatch(heading[1])?.group(1);
+    if (existingChecksum != config.checksum.toString()) {
+      needsUpdate = true;
+    } else {
+      // Check if any of the imported files have a modification time later than
+      // when we last generated the destination file.
+      var lastModifiedTimes = await Future.wait<DateTime>([
+        for (var entry in config.importEntries)
+          fs.file(entry.path).lastModified(),
+        destinationFile.lastModified(),
+      ]);
+
+      var lastUpdated = lastModifiedTimes.removeLast();
+
+      lastModifiedTimes.sort();
+      needsUpdate = lastModifiedTimes.last >= lastUpdated;
+    }
+
+    if (!needsUpdate) {
+      _logger.info('${destinationFile.path} is already up-to-date.');
+      return;
+    }
+  }
+
   var output = generateOutput(config);
   if (output.isEmpty) {
     return;
@@ -100,26 +152,6 @@ Future<void> processYamlDocument(
     output = DartFormatter().format(output);
   } on FormatterException catch (e) {
     io.stderr.writeln(e);
-  }
-
-  var destinationFile = fs.file(config.destinationPath);
-  if (!destinationFile.existsSync()) {
-    destinationFile.parent.createSync(recursive: true);
-  } else {
-    // See <https://github.com/google/file.dart/issues/193>.
-    var firstLine = await utf8.decoder
-        .bind(destinationFile.openRead())
-        .transform(const LineSplitter())
-        .first;
-    firstLine = firstLine.toLowerCase();
-    if (firstLine.contains('generated') && firstLine.contains(packageName)) {
-      // Safe to overwrite.
-    } else {
-      throw io.FileSystemException(
-        'File "${config.destinationPath}" already exists.  Cowardly refusing '
-        'to overwrite it.',
-      );
-    }
   }
 
   destinationFile.writeAsStringSync(output);
@@ -255,7 +287,8 @@ ResourceImporterConfiguration? loadResourceImporterConfiguration(
   return ResourceImporterConfiguration(
     importEntries: importEntries,
     destinationPath: destinationPath,
-    checksum: sha1.convert(utf8.encode(resourceImporterRoot.span.text)),
+    checksum:
+        sha1.convert(utf8.encode(resourceImporterRoot.span.text.trimRight())),
   );
 }
 

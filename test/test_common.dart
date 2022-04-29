@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:file/local.dart';
 import 'package:file/memory.dart';
 
+final defaultModificationTime = DateTime.utc(2022, 1, 1);
+
 const binaryFilePathPosix = 'assets/data.bin';
 const multilineTextFilePathPosix = 'assets/utf8_multiline.txt';
 const destinationPathPosix = 'lib/app.resources.dart';
@@ -64,11 +66,20 @@ MemoryFileSystem setUpMemoryFileSystem({
   }
 
   fs
-    ..addFile('$packageRootPath/pubspec.yaml', content: yaml)
-    ..addFile('$packageRootPath/$binaryFilePath', content: binaryData)
+    ..addFile(
+      '$packageRootPath/pubspec.yaml',
+      content: yaml,
+      lastModified: defaultModificationTime,
+    )
+    ..addFile(
+      '$packageRootPath/$binaryFilePath',
+      content: binaryData,
+      lastModified: defaultModificationTime,
+    )
     ..addFile(
       '$packageRootPath/$multilineTextFilePath',
       content: multilineString,
+      lastModified: defaultModificationTime,
     )
     ..currentDirectory = packageRootPath;
   return fs;
@@ -83,6 +94,7 @@ extension AddMemoryFile on MemoryFileSystem {
   void addFile(
     String pathPosix, {
     required Object content,
+    DateTime? lastModified,
   }) {
     var path =
         (style == FileSystemStyle.windows) ? pathPosix.toWindows() : pathPosix;
@@ -96,6 +108,10 @@ extension AddMemoryFile on MemoryFileSystem {
       throw ArgumentError(
         'addMemoryFile: Unsupported content type: ${content.runtimeType}',
       );
+    }
+
+    if (lastModified != null) {
+      file.setLastModifiedSync(lastModified);
     }
   }
 }
