@@ -412,11 +412,10 @@ void main() {
 
 /// A [Matcher] that checks if the matched object is of a specified type and
 /// includes the specified substring in its [Object.toString] representation.
-class InstanceWithSubstrings<T> extends CustomMatcher {
+class InstanceWithSubstrings<T> extends Matcher {
   final List<String> _substrings;
 
-  InstanceWithSubstrings(this._substrings)
-      : super('a $T that contains all substrings', '', _substrings);
+  InstanceWithSubstrings(this._substrings);
 
   @override
   bool matches(Object? item, Map<dynamic, dynamic> matchState) {
@@ -434,6 +433,10 @@ class InstanceWithSubstrings<T> extends CustomMatcher {
     }
     return true;
   }
+
+  @override
+  Description describe(Description description) =>
+      description.add('a $T that contains all substrings $_substrings');
 
   @override
   Description describeMismatch(

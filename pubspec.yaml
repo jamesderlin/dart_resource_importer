@@ -1,6 +1,6 @@
 name: resource_importer
 description:  Imports resource files as string or binary literals in Dart code.
-version: 0.1.0+1
+version: 0.1.0+2
 repository: https://github.com/jamesderlin/dart_resource_importer
 
 executables:

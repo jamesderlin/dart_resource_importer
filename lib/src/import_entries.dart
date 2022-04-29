@@ -39,9 +39,6 @@ abstract class ImportEntry {
     FileSystem fs = const LocalFileSystem(),
   }) {
     var file = fs.file(fs.path.normalize(path));
-    // if (!file.existsSync()) {
-    //   throw ArgumentError('File "$path" not found.');
-    // }
 
     type ??= _tokenUint8List;
 
