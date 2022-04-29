@@ -1,3 +1,5 @@
+// This file is assigned to the public domain.
+
 import 'dart:convert';
 import 'dart:typed_data';
 

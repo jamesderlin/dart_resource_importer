@@ -1,3 +1,5 @@
+// This file is assigned to the public domain.
+
 import 'dart:io' show gzip;
 import 'dart:typed_data';
 
