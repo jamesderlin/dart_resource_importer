@@ -4,12 +4,15 @@ import 'dart:io' as io;
 import 'package:dart_style/dart_style.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:logging/logging.dart' as log;
 import 'package:yaml/yaml.dart';
 
 import 'import_entries.dart';
 
 /// The name of this package.
 const packageName = 'resource_importer';
+
+final _logger = log.Logger.root;
 
 /// The resource importer configuration loaded from a YAML document.
 class ResourceImporterConfiguration {
@@ -116,6 +119,7 @@ Future<void> processYamlDocument(
   }
 
   destinationFile.writeAsStringSync(output);
+  _logger.info('Wrote ${destinationFile.path}.');
 }
 
 /// Loads the [ResourceImporterConfiguration] from a single YAML document.
