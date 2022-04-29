@@ -1,6 +1,6 @@
 # resource_importer
 
-Imports resource files as literals in Dart code.
+Imports resource files as string or binary literals in Dart code.
 
 ## What?
 
@@ -58,50 +58,7 @@ standalone executables, tests for Dart for the Web).
 
 ### Configuration syntax
 
-```yaml
-resource_importer:
-  destination: 'lib/foo.resources.dart'
-  # Optional.  The path to the generated `.dart` file.  If not specified,
-  # `lib/resources.resource_importer.dart` will be used by default.
-
-  resources:
-  # Required.  The list of resources to import.
-
-    resourceName:
-    # Required.  The name of the resource.  This will be directly used as the
-    # name of the generated Dart variable, so it must be a valid Dart
-    # identifier.
-
-      path: 'path/to/file'
-      # Required.  The path to the file to import.  Relative paths are treated
-      # as relative to the package's root directory (i.e., the directory
-      # containing the `pubspec.yaml` file).
-
-      type: Uint8List
-      # Optional.  The type of the resource.  Corresponds to the type of the
-      # generated variable.  Allowed types are:
-      #
-      # * `Uint8List`
-      #     The default if no type is specified.  Imports the specified file
-      #     as raw bytes stored in a `Uint8List`.
-      #
-      # * `String`
-      #     Assumes that the specified file is a UTF-8-encoded text file and
-      #     imports it as a `String` literal.
-      #
-      # * `List<String>`
-      #     Like `String` except that the imported file is split into separate
-      #     lines.
-      #
-      # * `Base64Data`
-      #     Imports a binary file as a base64-encoded `String` literal.
-      #
-      # * `GzippedData`
-      #     Like `Uint8List` but compressed with gzip.
-
-    binaryResourceName: 'path/to/file'
-    # A shorthand syntax is also provided for `Uint8List` types.
-```
+See [the example].
 
 ### Usage
 
@@ -113,7 +70,7 @@ resource_importer:
     ```
 
 2. Add a `resource_importer` block to your `pubspec.yaml` file as described
-   above.
+   in [the example].
 
 3. Run `dart run resource_importer` from the directory that contains your
    `pubspec.yaml` file to generate code.  Currently this is not automatic and
@@ -131,7 +88,8 @@ And then use [`Base64Data.data()`] or [`GzippedData.data()`] respectively to
 access their decoded bytes as `Uint8List`s. Note that `GzippedData` depends on
 `dart:io` and therefore cannot be used for Dart for the Web.
 
-[`Base64Data`]: https://pub.dev/packages/resource_importer/latest/base64_data/Base64Data-class.html
-[`GzippedData`]: https://pub.dev/packages/resource_importer/latest/gzipped_data/GzippedData-class.html
-[`Base64Data.data()`]: https://pub.dev/packages/resource_importer/latest/base64_data/Base64Data/data.html
-[`GzippedData.data()`]: https://pub.dev/packages/resource_importer/latest/gzipped_data/GzippedData/data.html
+[the example]: https://pub.dev/packages/resource_importer/example
+[`Base64Data`]: https://pub.dev/documentation/resource_importer/latest/base64_data/Base64Data-class.html
+[`GzippedData`]: https://pub.dev/documentation/resource_importer/latest/gzipped_data/GzippedData-class.html
+[`Base64Data.data()`]: https://pub.dev/documentation/resource_importer/latest/base64_data/Base64Data/data.html
+[`GzippedData.data()`]: https://pub.dev/documentation/resource_importer/latest/gzipped_data/GzippedData/data.html
