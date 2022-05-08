@@ -48,10 +48,10 @@ instead should use proper assets** that are packaged with your application. You
 usually don't want large textual representations of binary files in your source
 tree, wasting cycles from the Dart compiler and analyzer and possibly wasting
 space in your source control system. (You often shouldn't be committing
-generated files to source control anyway.)
+generated files to source control, though.)
 
 This is primarily intended for non-Flutter Dart projects where bundling
-additional files is inconvenient (e.g. console programs distributed as
+additional files can be inconvenient (e.g. console programs distributed as
 standalone executables, tests for Dart for the Web).
 
 ## How?
@@ -62,7 +62,7 @@ See [the example].
 
 ### Usage
 
-1. Modify your `pubspec.yaml` to add:
+1. Modify your `pubspec.yaml` file to add:
 
     ```yaml
     dev_dependencies:
@@ -84,7 +84,7 @@ The [`Base64Data`] and [`GzippedData`] types are custom classes provided by
     resource_importer: ^0.1.0
   ```
 
-And then use [`Base64Data.data()`] or [`GzippedData.data()`] respectively to
+and then use [`Base64Data.data()`] or [`GzippedData.data()`] respectively to
 access their decoded bytes as `Uint8List`s. Note that `GzippedData` depends on
 `dart:io` and therefore cannot be used for Dart for the Web.
 
