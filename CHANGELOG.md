@@ -1,6 +1,7 @@
 ## 0.1.0+2
 
-* Simplify a test.
+* Simplified a test.
+* Consume `analysis_options.yaml` from `package:dartbag`.
 
 ## 0.1.0+1
 
