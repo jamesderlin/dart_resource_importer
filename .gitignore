@@ -5,4 +5,8 @@
 # Conventional directory for build output.
 build/
 
+# Generated documentation and reports.
+coverage/
+doc/
+
 .pubignore

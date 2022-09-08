@@ -7,10 +7,10 @@ resource_importer:
   resources:
   # Required.  The list of resources to import.
 
-    resourceName:
+    myResourceName:
     # Required.  The name of the resource.  This will be directly used as the
     # name of the generated Dart variable, so it must be a valid Dart
-    # identifier.
+    # identifier and must be unique.
 
       path: 'path/to/file'
       # Required.  The path to the file to import.  Relative paths are treated
@@ -39,6 +39,6 @@ resource_importer:
       # * `GzippedData`
       #     Like `Uint8List` but compressed with gzip.
 
-    binaryResourceName: 'path/to/file'
+    myBinaryResourceName: 'path/to/file'
     # A shorthand syntax is also provided for `Uint8List` types.
 ```

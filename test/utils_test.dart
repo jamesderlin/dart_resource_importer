@@ -27,5 +27,6 @@ void main() {
     expect(escapeString('ordinary'), 'ordinary');
     expect(escapeString('new\nlines'), r'new\nlines');
     expect(escapeString('"\r\n\b\t\v\f\\'), r'\"\r\n\b\t\v\f\\');
+    expect(escapeString(r'$doNotInterpolate'), r'\$doNotInterpolate');
   });
 }

@@ -3,6 +3,7 @@
 
 // ignore_for_file: always_specify_types
 // ignore_for_file: always_use_package_imports
+// ignore_for_file: avoid_escaping_inner_quotes
 // ignore_for_file: lines_longer_than_80_chars
 // ignore_for_file: prefer_single_quotes
 // ignore_for_file: public_member_api_docs
@@ -13,13 +14,16 @@ import 'package:resource_importer/base64_data.dart';
 import 'package:resource_importer/gzipped_data.dart';
 
 var stringResource =
-    "The quick brown fox jumps over the lazy dog.\nPack my box with five dozen liquor jugs.\nJackdaws love my big sphinx of quartz.\nThe five boxing wizards jump quickly.\n";
+    "The quick brown fox jumps over the lazy dog.\nPack my box with five dozen liquor jugs.\nJackdaws love my big sphinx of quartz.\nThe five boxing wizards jump quickly.\n\n\"Hello!\" he said.\n\"Where's the \$amount you owe me?\" she asked.\n";
 
 var stringListResource = [
   "The quick brown fox jumps over the lazy dog.",
   "Pack my box with five dozen liquor jugs.",
   "Jackdaws love my big sphinx of quartz.",
   "The five boxing wizards jump quickly.",
+  "",
+  "\"Hello!\" he said.",
+  "\"Where's the \$amount you owe me?\" she asked.",
 ];
 
 var binaryResource = Uint8List.fromList(const [

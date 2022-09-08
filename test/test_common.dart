@@ -1,6 +1,8 @@
-import 'dart:convert';
+import 'dart:io' as io;
 import 'dart:typed_data';
 
+import 'package:dartbag/debug.dart';
+import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:file/memory.dart';
 
@@ -45,7 +47,11 @@ const multilineString = //
     'The quick brown fox jumps over the lazy dog.\n'
     'Pack my box with five dozen liquor jugs.\n'
     'Jackdaws love my big sphinx of quartz.\n'
-    'The five boxing wizards jump quickly.\n';
+    'The five boxing wizards jump quickly.\n'
+    '\n'
+    '"Hello!" he said.\n'
+    '"Where\'s the \$amount you owe me?" she asked.\n';
+
 final binaryData = Uint8List.fromList([
   for (var i = 0; i < 512; i += 1) i,
 ]);
@@ -56,39 +62,30 @@ MemoryFileSystem setUpMemoryFileSystem({
   required String packageRootPath,
   required FileSystemStyle style,
 }) {
-  var fs = MemoryFileSystem(style: style);
-
-  var binaryFilePath = binaryFilePathPosix;
-  var multilineTextFilePath = multilineTextFilePathPosix;
-  if (style == FileSystemStyle.windows) {
-    binaryFilePath = binaryFilePath.toWindows();
-    multilineTextFilePath = multilineTextFilePathPosix.toWindows();
-  }
-
-  fs
+  var memoryFs = MemoryFileSystem(style: style)
     ..addFile(
       '$packageRootPath/pubspec.yaml',
       content: yaml,
       lastModified: defaultModificationTime,
     )
-    ..addFile(
-      '$packageRootPath/$binaryFilePath',
-      content: binaryData,
+    ..copyFile(
+      source: getTestFile(binaryFilePathPosix),
+      destinationPosix: '$packageRootPath/$binaryFilePathPosix',
       lastModified: defaultModificationTime,
     )
-    ..addFile(
-      '$packageRootPath/$multilineTextFilePath',
-      content: multilineString,
+    ..copyFile(
+      source: getTestFile(multilineTextFilePathPosix),
+      destinationPosix: '$packageRootPath/$multilineTextFilePathPosix',
       lastModified: defaultModificationTime,
     )
     ..currentDirectory = packageRootPath;
-  return fs;
+  return memoryFs;
 }
 
 extension AddMemoryFile on MemoryFileSystem {
   /// Adds a [File] with the specified path and contents.
   ///
-  /// Automatically creates all ancesetor directories if necessary.
+  /// Automatically creates all ancestor directories if necessary.
   ///
   /// [content] must be either a [Uint8List] or a [String].
   void addFile(
@@ -103,7 +100,7 @@ extension AddMemoryFile on MemoryFileSystem {
     if (content is String) {
       file.writeAsStringSync(content);
     } else if (content is Uint8List) {
-      file.writeAsBytes(content);
+      file.writeAsBytesSync(content);
     } else {
       throw ArgumentError(
         'addMemoryFile: Unsupported content type: ${content.runtimeType}',
@@ -114,22 +111,45 @@ extension AddMemoryFile on MemoryFileSystem {
       file.setLastModifiedSync(lastModified);
     }
   }
+
+  /// Copies a file from the local file system to the [MemoryFileSystem].
+  ///
+  /// Automatically creates all ancestor directories if necessary.
+  void copyFile({
+    required File source,
+    required String destinationPosix,
+    DateTime? lastModified,
+  }) {
+    var destination = (style == FileSystemStyle.windows)
+        ? destinationPosix.toWindows()
+        : destinationPosix;
+
+    var content = source.readAsBytesSync();
+    var file = this.file(destination)
+      ..parent.createSync(recursive: true)
+      ..writeAsBytesSync(content, flush: true);
+    if (lastModified != null) {
+      file.setLastModifiedSync(lastModified);
+    }
+  }
 }
 
 /// Returns the absolute path to the `test` directory.
 ///
 /// Note that [io.Platform.script] does not work in tests and also will not
 /// work for `import`ed files.
-String getTestPath() {
-  var filePathRegExp = RegExp(r'(file://.+\.dart)');
-  var stackLineIterator = LineSplitter.split(StackTrace.current.toString());
-  var match = filePathRegExp.firstMatch(stackLineIterator.first);
-  if (match == null) {
-    throw StateError('Failed to determine path to the `test` directory.');
-  }
+String getTestPath() =>
+    const LocalFileSystem().path.dirname(currentDartFilePath());
 
-  var scriptPath = Uri.parse(match.group(1)!).toFilePath();
-  return const LocalFileSystem().path.dirname(scriptPath);
+/// Returns the [File] for the specified path within  the `test` directory.
+File getTestFile(String pathPosix) {
+  const localFs = LocalFileSystem();
+  return localFs.file(
+    localFs.path.join(
+      getTestPath(),
+      io.Platform.isWindows ? pathPosix.toWindows() : pathPosix,
+    ),
+  );
 }
 
 extension WindowsPath on String {

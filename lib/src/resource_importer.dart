@@ -123,7 +123,7 @@ Future<void> processYamlDocument(
     if (existingChecksum != config.checksum.toString()) {
       needsUpdate = true;
     } else {
-      // Check if any of the imported files have a modification time later than
+      // Check if any of the imported files has a modification time later than
       // when we last generated the destination file.
       var lastModifiedTimes = await Future.wait<DateTime>([
         for (var entry in config.importEntries)
@@ -309,6 +309,7 @@ String generateOutput(ResourceImporterConfiguration config) {
   const ignoredLints = [
     'always_specify_types',
     'always_use_package_imports',
+    'avoid_escaping_inner_quotes',
     'lines_longer_than_80_chars',
     'prefer_single_quotes',
     'public_member_api_docs',

@@ -3,7 +3,6 @@ import 'dart:io' as io;
 
 import 'package:basics/date_time_basics.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:file/local.dart';
 import 'package:file/memory.dart';
 import 'package:logging/logging.dart' as log;
 import 'package:resource_importer/src/resource_importer.dart';
@@ -54,11 +53,8 @@ void main() {
     var formatter = DartFormatter();
     expect(contents, formatter.format(contents));
 
-    const localFs = LocalFileSystem();
-    var testPath = getTestPath();
-    var expectedContents = localFs
-        .file(localFs.path.join(testPath, 'expected', 'test.resources.dart'))
-        .readAsStringSync();
+    var expectedContents =
+        getTestFile('expected/test.resources.dart').readAsStringSync();
     expect(contents, formatter.format(expectedContents));
   });
 

@@ -1,5 +1,7 @@
 # resource_importer
 
+[![pub package](https://img.shields.io/pub/v/resource_importer.svg)](https://pub.dev/packages/resource_importer)
+
 Imports resource files as string or binary literals in Dart code.
 
 ## What?
@@ -43,12 +45,12 @@ void main() {
 
 ## Why?
 
-Honestly, most people probably shouldn't be using this. **Flutter projects
-instead should use proper assets** that are packaged with your application. You
-usually don't want large textual representations of binary files in your source
-tree, wasting cycles from the Dart compiler and analyzer and possibly wasting
-space in your source control system. (You often shouldn't be committing
-generated files to source control, though.)
+Honestly, most people probably shouldn't be using this. [**Flutter projects
+instead should use proper assets**][flutter-assets] that are packaged with your
+application.  You usually don't want large textual representations of binary
+files in your source tree, wasting cycles from the Dart compiler and analyzer
+and possibly wasting space in your source control system. (You often shouldn't
+be committing generated files to source control, though.)
 
 This is primarily intended for non-Flutter Dart projects where bundling
 additional files can be inconvenient (e.g. console programs distributed as
@@ -66,7 +68,7 @@ See [the example].
 
     ```yaml
     dev_dependencies:
-      resource_importer: ^0.1.0
+      resource_importer: ^0.2.0
     ```
 
 2. Add a `resource_importer` block to your `pubspec.yaml` file as described
@@ -81,13 +83,14 @@ The [`Base64Data`] and [`GzippedData`] types are custom classes provided by
 
   ```yaml
   dependencies:
-    resource_importer: ^0.1.0
+    resource_importer: ^0.2.0
   ```
 
 and then use [`Base64Data.data()`] or [`GzippedData.data()`] respectively to
 access their decoded bytes as `Uint8List`s. Note that `GzippedData` depends on
 `dart:io` and therefore cannot be used for Dart for the Web.
 
+[flutter-assets]: https://docs.flutter.dev/development/ui/assets-and-images
 [the example]: https://pub.dev/packages/resource_importer/example
 [`Base64Data`]: https://pub.dev/documentation/resource_importer/latest/base64_data/Base64Data-class.html
 [`GzippedData`]: https://pub.dev/documentation/resource_importer/latest/gzipped_data/GzippedData-class.html
