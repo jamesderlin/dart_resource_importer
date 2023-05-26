@@ -93,7 +93,7 @@ class Uint8ListImportEntry extends ImportEntry {
   String generateCode() {
     var data = _file.readAsBytesSync();
     var stringBuffer = StringBuffer()
-      ..write('var $name = Uint8List.fromList(const [')
+      ..write('final $name = Uint8List.fromList(const [')
       ..writeln('// Do not format.');
     var count = 0;
     for (var byte in data) {
@@ -120,7 +120,7 @@ class Base64DataImportEntry extends ImportEntry {
   @override
   String generateCode() {
     var data = _file.readAsBytesSync();
-    return 'var $name = const Base64Data("${base64.encode(data)}");';
+    return 'const $name = Base64Data("${base64.encode(data)}");';
   }
 }
 
@@ -136,7 +136,7 @@ class GzippedDataImportEntry extends ImportEntry {
   String generateCode() {
     var data = _file.readAsBytesSync();
     var stringBuffer = StringBuffer()
-      ..write('var $name = const GzippedData([')
+      ..write('const $name = GzippedData([')
       ..writeln('// Do not format.');
     var count = 0;
     for (var byte in io.gzip.encode(data)) {
@@ -180,7 +180,7 @@ class StringImportEntry extends ImportEntry {
     }
 
     var data = _file.readAsStringSync();
-    return 'var $name = "${escapeString(data)}";';
+    return 'const $name = "${escapeString(data)}";';
   }
 }
 
@@ -215,7 +215,7 @@ class StringListImportEntry extends ImportEntry {
     var data = _file.readAsStringSync();
     var lines = LineSplitter.split(data);
 
-    var stringBuffer = StringBuffer()..write('var $name = [');
+    var stringBuffer = StringBuffer()..write('const $name = [');
     for (var line in lines) {
       stringBuffer.write('"${escapeString(line)}", ');
     }
